@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/10-printer.php';
+include_once __DIR__ . '/printer.php';
 
 $kassa = new printer('http://10.1.1.57:16732');
 
