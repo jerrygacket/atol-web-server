@@ -35,4 +35,6 @@ print_r($kassa->printSellPaper($items));
 sleep(10);
 print_r($kassa->printSellReturnPaper($items));
 
-$kassa->closeShift();
+if ($kassa->isShiftOpen()) {
+    $kassa->closeShift();
+}
