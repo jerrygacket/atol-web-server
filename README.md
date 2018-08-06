@@ -28,3 +28,9 @@
     Настройки связи с ККТ - ip-адрес <ipaddress>
   
   Вся документация есть в архиве с драйверами.
+
+# Нюансы
+- Для генерации уникальных uuid используется uuidgen.
+	$newId = exec('uuidgen -r');
+- Необходима установка Guzzle
+	composer require guzzlehttp/guzzle
