@@ -30,7 +30,7 @@
   Вся документация есть в архиве с драйверами.
 
 # Нюансы
-- Для генерации уникальных uuid используется uuidgen.
+- Для генерации уникальных uuid используется uuidgen:
 	$newId = exec('uuidgen -r');
-- Необходима установка Guzzle
+- Необходима установка Guzzle:
 	composer require guzzlehttp/guzzle
