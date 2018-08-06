@@ -53,7 +53,7 @@ class printer
         if ($counter > 30) {break;} //ждем 30 секунд и типа отваливаемся по таймауту
       }
 	   if ($not_ready) {
-       return 'Timeout';
+       return 'Timeout'.PHP_EOL;
      } else {
        return $response;
      }
@@ -109,7 +109,7 @@ class printer
   }
 
   //Открытие смены
-  function openShift($operator) {
+  function openShift() {
     if (!$this->connected) {
       echo 'Not connected'.PHP_EOL;
       return false;
@@ -162,17 +162,87 @@ class printer
     return $response;
   }
 
-  //печать чека
-  function printReceiptPaper($items) {
+  //печать чека прихода
+  function printSellPaper($items) {
     if (!$this->isShiftOpen()) {
       $this->openShift();
+      if (!$this->isShiftOpen()) {
+        echo 'Error open shift'.PHP_EOL;
+        return false;
+      }
     }
-    $task = array();
-    $task['type'] = 'sell';
-    $task['electronically'] = false;
-    $task['ignoreNonFiscalPrintErrors'] = false;
-    $task['operator'] = array('name' => $this->operator);
-    $task['items'] = $items;
+    $receipt = array();
+    $receipt['type'] = 'sell';
+    //$task['electronically'] = false;
+    $receipt['ignoreNonFiscalPrintErrors'] = false;
+    $receipt['taxationType'] = 'osn';
+    // $receipt['operator']['name'] = $this->operator;
+    $receipt['items'] = $items;
 
+    $total = 0;
+    foreach ($items as $item) {
+      if (array_key_exists('price',$item) and array_key_exists('quantity',$item)) {
+        $total += $item['price'] * $item['quantity'];
+      }
+    }
+
+    $receipt['payments'] = array(array('type' => 'electronically', 'sum' => $total));
+    $receipt['total'] = $total;
+
+    $newId = exec('uuidgen -r');
+    $task = array('uuid' => $newId, 'request' => $receipt);
+    $response = $this->postData($task);
+    if (!empty($response)) {print_r($response);}
+    $response = $this->checkStatus($newId);
+    return $response;
+  }
+
+// чек возврата прихода
+  function printSellReturnPaper($items) {
+    if (!$this->isShiftOpen()) {
+      $this->openShift();
+      if (!$this->isShiftOpen()) {
+        echo 'Error open shift'.PHP_EOL;
+        return false;
+      }
+    }
+    $receipt = array();
+    $receipt['type'] = 'sellReturn';
+    //$task['electronically'] = false;
+    $receipt['ignoreNonFiscalPrintErrors'] = false;
+    $receipt['taxationType'] = 'osn';
+    // $receipt['operator'] = array('name' => $this->operator);
+    $receipt['items'] = $items;
+
+    $total = 0;
+    foreach ($items as $item) {
+      if (array_key_exists('price',$item) and array_key_exists('quantity',$item)) {
+        $total += $item['price'] * $item['quantity'];
+      }
+    }
+
+    $receipt['payments'] = array(array('type' => 'electronically', 'sum' => $total));
+    $receipt['total'] = $total;
+
+    $newId = exec('uuidgen -r');
+    $task = array('uuid' => $newId, 'request' => $receipt);
+    $response = $this->postData($task);
+    if (!empty($response)) {print_r($response);}
+    $response = $this->checkStatus($newId);
+    return $response;
+  }
+
+  // чек расхода
+  function printBuyPaper($items) {
+    // if (!$this->isShiftOpen()) {
+    //   $this->openShift();
+    // }
+  }
+
+  // чек возврата расхода
+  function printBuyReturnPaper($items) {
+    // if (!$this->isShiftOpen()) {
+    //   $this->openShift();
+    // }
   }
 }
