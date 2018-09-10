@@ -1,7 +1,7 @@
 <?php
 include_once __DIR__ . '/printer.php';
 
-$kassa = new printer('http://10.1.1.57:16732');
+$kassa = new AtolPrinter('http://10.1.1.57:16732');
 
 print_r($kassa->checkConnect());
 
